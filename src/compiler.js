@@ -53,7 +53,7 @@ const replaceText = (initMounted, parent, vnode, data, rootNode, i) => {
       if (match && match.length) {
         let index = key.indexOf('[')
         let arrProperty = key.slice(0, index)
-        initMounted && new Watcher(val, arrProperty, parent, rootNode, i, replaceText)
+        initMounted && new Watcher(rootNode, data, val[arrProperty], key, parent, i, replaceText)
         return match.reduce((prev, next) => {
           let arrIndex = +JSON.parse(next) // next是'[0]'这种形式，需要转换下拿到数组下标0
           let nextValue = prev[arrIndex]
@@ -61,7 +61,7 @@ const replaceText = (initMounted, parent, vnode, data, rootNode, i) => {
         }, val[arrProperty])
       } else {
         if (!isObject(val[key])) {
-          initMounted && new Watcher(val, key, parent, rootNode, i, replaceText)
+          initMounted && new Watcher(rootNode, data, val, key, parent, i, replaceText)
         }
         return val[key] || ''
       }

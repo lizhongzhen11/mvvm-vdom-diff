@@ -10,13 +10,13 @@ import { Reg, RegSquareBrackets } from './config.js'
  * @see 关键点在于对data的遍历获取，变相的调用了data的get方法
  */
 export default class Watcher {
-  constructor (data, key, parent, rootNode, index, replaceText, oldVnode) {
+  constructor (rootNode, dataSource, data, key, parent, index, replaceText) {
     this.data = data
     this.key = key
     this.parent = parent // 父节点，根据这个可以去重以及确定需要改变的文本节点
     this.index = index // oldVnode在parent中的位置，类似于数组下标
     this.replaceText = replaceText
-    this.oldVnode = oldVnode
+    this.dataSource = dataSource
     Dep.target = this
     // keys.reduce((val, k) => val[k], data)
     let val = data[key]
@@ -24,7 +24,7 @@ export default class Watcher {
   }
   update () {
     // 得到新的文本节点数据
-    this.newVnode = this.replaceText(false, this.parent, this.parent.children[this.index], this.data)
+    this.newVnode = this.replaceText(false, this.parent, this.parent.children[this.index], this.dataSource)
     console.log(this)
     // queueWatcher(this, newVnode)
   }
