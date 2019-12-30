@@ -1,0 +1,18 @@
+{
+  "name": "mvvm-vdom-diff",
+  "version": "1.0.0",
+  "description": "mvvm结合虚拟dom以及diff算法的综合模拟",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack-dev-server --config webpack.config.js --open"
+  },
+  "author": "lizhongzhen11",
+  "license": "ISC",
+  "dependencies": {
+    "html-webpack-plugin": "^3.2.0",
+    "webpack": "^4.41.4",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.1"
+  }
+}
