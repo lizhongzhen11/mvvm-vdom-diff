@@ -12,23 +12,23 @@ import { Reg, RegSquareBrackets } from './config.js'
  * @param {rootNode} 这个rootNode代表页面中接受插入的根节点，这里默认是id为root的节点
  */
 export default class Compiler {
-  constructor (data, rootNode, fragment, vnode) {
+  constructor (data, rootNode, fragment, rootVnode) {
     this.data = data
     this.rootNode = rootNode
     this.fragment = fragment
-    this.vnode = vnode
+    this.rootVnode = rootVnode
     this.render()
   }
   render () {
     let data = this.data
     const replace = (node, vnode, parent, i) => {
       if (isString(vnode)) {
-        node.nodeValue = replaceText(true, parent, vnode, this.data, this.rootNode, i)
+        node.nodeValue = replaceText(node, true, parent, vnode, this.data, i)
       } else {
         vnode.children.forEach((child, index) => replace(node.childNodes[index], child, vnode, index))
       }
     }
-    replace(this.fragment, this.vnode)
+    replace(this.fragment, this.rootVnode)
     while(this.fragment.firstChild) {
       this.rootNode.appendChild(this.fragment.firstChild)
     }
@@ -44,7 +44,7 @@ export default class Compiler {
  * @param {*} rootNode 根节点，DOM节点
  * @param {*} i 当前文本节点在父节点中的位置
  */
-const replaceText = (initMounted, parent, vnode, data, rootNode, i) => {
+const replaceText = (node, initMounted, parent, vnode, data, i) => {
   return vnode.replace(Reg, (match, p1) => {
     let keys = p1.split('.')
     // initMounted && new Watcher(data, keys, parent, rootNode, i, replaceText)
@@ -53,7 +53,7 @@ const replaceText = (initMounted, parent, vnode, data, rootNode, i) => {
       if (match && match.length) {
         let index = key.indexOf('[')
         let arrProperty = key.slice(0, index)
-        initMounted && new Watcher(rootNode, data, val[arrProperty], key, parent, i, replaceText)
+        initMounted && new Watcher(node, data, val[arrProperty], key, parent, i, replaceText)
         return match.reduce((prev, next) => {
           let arrIndex = +JSON.parse(next) // next是'[0]'这种形式，需要转换下拿到数组下标0
           let nextValue = prev[arrIndex]
@@ -61,7 +61,7 @@ const replaceText = (initMounted, parent, vnode, data, rootNode, i) => {
         }, val[arrProperty])
       } else {
         if (!isObject(val[key])) {
-          initMounted && new Watcher(rootNode, data, val, key, parent, i, replaceText)
+          initMounted && new Watcher(node, data, val, key, parent, i, replaceText)
         }
         return val[key] || ''
       }

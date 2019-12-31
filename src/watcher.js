@@ -1,6 +1,5 @@
 import Dep from './dep'
 import { queueWatcher } from './scheduler'
-import { Reg, RegSquareBrackets } from './config.js'
 
 /**
  * @name Watcher
@@ -10,22 +9,22 @@ import { Reg, RegSquareBrackets } from './config.js'
  * @see 关键点在于对data的遍历获取，变相的调用了data的get方法
  */
 export default class Watcher {
-  constructor (rootNode, dataSource, data, key, parent, index, replaceText) {
+  constructor (node, dataSource, data, key, parent, index, replaceText) {
+    this.node = node
+    this.dataSource = dataSource
     this.data = data
     this.key = key
     this.parent = parent // 父节点，根据这个可以去重以及确定需要改变的文本节点
-    this.index = index // oldVnode在parent中的位置，类似于数组下标
+    this.index = index // oldVnode在parent.children中的位置，数组下标
     this.replaceText = replaceText
-    this.dataSource = dataSource
     Dep.target = this
     // keys.reduce((val, k) => val[k], data)
-    let val = data[key]
+    let val = data[key] // 为了添加订阅
     Dep.target = null
   }
   update () {
     // 得到新的文本节点数据
-    this.newVnode = this.replaceText(false, this.parent, this.parent.children[this.index], this.dataSource)
-    console.log(this)
-    // queueWatcher(this, newVnode)
+    this.newVnode = this.replaceText(this.node, false, this.parent, this.parent.children[this.index], this.dataSource)
+    queueWatcher(this)
   }
 }
